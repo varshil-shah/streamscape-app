@@ -49,4 +49,39 @@ class AuthService {
       return false;
     }
   }
+
+  Future<bool> signin(BuildContext ctx, String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/v1/users/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> body = jsonDecode(response.body);
+        if (body["status"] == "success") {
+          final String token = body["token"];
+          await storageService.set(jwtKey, token);
+
+          CustomSnackBar.showSnackBar(ctx, "Signed in successfully");
+          return true;
+        } else {
+          ErrorHandler.handleError(ctx, response, "Storage permission denied!");
+          return false;
+        }
+      } else {
+        ErrorHandler.handleError(ctx, response, "Unexpected error occurred");
+        return false;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
 }

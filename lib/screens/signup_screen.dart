@@ -19,6 +19,7 @@ class _SignupScreenState extends State<SignupScreen> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
 
+  final AuthService authService = AuthService();
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
 
@@ -37,8 +38,6 @@ class _SignupScreenState extends State<SignupScreen> {
     passwordController.dispose();
     super.dispose();
   }
-
-  final AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +63,20 @@ class _SignupScreenState extends State<SignupScreen> {
         );
       }
 
-      await authService.signup(ctx, name, email, password);
+      if (!mounted) return;
+
+      final bool status = await authService.signup(ctx, name, email, password);
       setState(() {
         isLoading = false;
       });
+
+      if (status) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.home,
+          (route) => false,
+        );
+      }
     }
 
     return Scaffold(

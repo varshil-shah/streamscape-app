@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:streamscape/constants.dart';
 import 'package:streamscape/routes.dart';
+import 'package:streamscape/services/auth_service.dart';
 import 'package:streamscape/widgets/form_button.dart';
 import 'package:streamscape/widgets/custom_snackbar.dart';
 import 'package:streamscape/widgets/input_field.dart';
@@ -17,7 +18,9 @@ class _SigninScreenState extends State<SigninScreen> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
 
+  final AuthService authService = AuthService();
   final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -37,17 +40,36 @@ class _SigninScreenState extends State<SigninScreen> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    void handleSignup() {
-      if (formKey.currentState!.validate()) {
-        final email = emailController.text;
-        final password = passwordController.text;
+    void handleSignup() async {
+      if (!formKey.currentState!.validate()) {
+        return;
+      }
 
-        if (email.isEmpty || password.isEmpty) {
-          return CustomSnackBar.showSnackBar(
-            context,
-            "Please fill in all the fields",
-          );
-        }
+      setState(() {
+        isLoading = true;
+      });
+
+      final email = emailController.text;
+      final password = passwordController.text;
+
+      if (email.isEmpty || password.isEmpty) {
+        return CustomSnackBar.showSnackBar(
+          context,
+          "Please fill in all the fields",
+        );
+      }
+
+      final bool success = await authService.signin(context, email, password);
+      setState(() {
+        isLoading = false;
+      });
+
+      if (success) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.home,
+          (route) => false,
+        );
       }
     }
 
