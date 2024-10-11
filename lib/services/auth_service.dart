@@ -84,4 +84,13 @@ class AuthService {
       return false;
     }
   }
+
+  Future<void> signout(BuildContext ctx) async {
+    try {
+      await storageService.remove(jwtKey);
+      CustomSnackBar.showSnackBar(ctx, "Signed out successfully");
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 }
