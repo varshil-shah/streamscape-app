@@ -44,7 +44,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    void handleSignup() async {
+    void handleSignup(BuildContext ctx) async {
       if (!formKey.currentState!.validate()) {
         return;
       }
@@ -64,18 +64,10 @@ class _SignupScreenState extends State<SignupScreen> {
         );
       }
 
-      final bool result = await authService.signup(name, email, password);
-
+      await authService.signup(ctx, name, email, password);
       setState(() {
         isLoading = false;
       });
-
-      if (!mounted) return;
-      if (result) {
-        return CustomSnackBar.showSnackBar(context, "Signup successful");
-      }
-
-      CustomSnackBar.showSnackBar(context, "Signup failed");
     }
 
     return Scaffold(
@@ -146,14 +138,20 @@ class _SignupScreenState extends State<SignupScreen> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FormButton(
-                            isLoading: isLoading,
-                            text: "Sign up",
-                            onPressed: handleSignup,
-                          ),
-                        ),
+                        isLoading
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                color: primaryColor,
+                              ))
+                            : SizedBox(
+                                width: double.infinity,
+                                child: FormButton(
+                                  text: "Sign up",
+                                  onPressed: () {
+                                    handleSignup(context);
+                                  },
+                                ),
+                              ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
