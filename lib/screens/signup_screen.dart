@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:streamscape/constants.dart';
 import 'package:streamscape/routes.dart';
+import 'package:streamscape/services/auth_service.dart';
 import 'package:streamscape/widgets/form_button.dart';
 import 'package:streamscape/widgets/custom_snackbar.dart';
 import 'package:streamscape/widgets/input_field.dart';
@@ -19,6 +20,7 @@ class _SignupScreenState extends State<SignupScreen> {
   late TextEditingController passwordController;
 
   final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -36,23 +38,44 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
+  final AuthService authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    void handleSignup() {
-      if (formKey.currentState!.validate()) {
-        final name = nameController.text;
-        final email = emailController.text;
-        final password = passwordController.text;
-
-        if (name.isEmpty || email.isEmpty || password.isEmpty) {
-          return CustomSnackBar.showSnackBar(
-            context,
-            "Please fill in all the fields",
-          );
-        }
+    void handleSignup() async {
+      if (!formKey.currentState!.validate()) {
+        return;
       }
+
+      setState(() {
+        isLoading = true;
+      });
+
+      final name = nameController.text;
+      final email = emailController.text;
+      final password = passwordController.text;
+
+      if (name.isEmpty || email.isEmpty || password.isEmpty) {
+        return CustomSnackBar.showSnackBar(
+          context,
+          "Please fill in all the fields",
+        );
+      }
+
+      final bool result = await authService.signup(name, email, password);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (!mounted) return;
+      if (result) {
+        return CustomSnackBar.showSnackBar(context, "Signup successful");
+      }
+
+      CustomSnackBar.showSnackBar(context, "Signup failed");
     }
 
     return Scaffold(
@@ -126,6 +149,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: FormButton(
+                            isLoading: isLoading,
                             text: "Sign up",
                             onPressed: handleSignup,
                           ),

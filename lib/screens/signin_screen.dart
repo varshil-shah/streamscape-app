@@ -109,6 +109,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: FormButton(
+                            isLoading: false,
                             text: "Sign in",
                             onPressed: handleSignup,
                           ),

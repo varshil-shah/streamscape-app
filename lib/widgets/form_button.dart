@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:streamscape/constants.dart';
 
 class FormButton extends StatelessWidget {
+  final bool isLoading;
   final String text;
   final VoidCallback onPressed;
 
   const FormButton({
     super.key,
+    required this.isLoading,
     required this.text,
     required this.onPressed,
   });
@@ -29,13 +31,17 @@ class FormButton extends StatelessWidget {
         backgroundColor: const WidgetStatePropertyAll(primaryColor),
       ),
       onPressed: onPressed,
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 18,
-          color: Colors.white,
-        ),
-      ),
+      child: isLoading
+          ? const CircularProgressIndicator(
+              color: Colors.white,
+            )
+          : Text(
+              text,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
     );
   }
 }
