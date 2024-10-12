@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:streamscape/models/user_model.dart';
+import 'package:streamscape/providers/user_provider.dart';
 import 'package:streamscape/routes.dart';
 import 'package:streamscape/services/auth_service.dart';
 
@@ -13,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
   final AuthService authService = AuthService();
 
   bool isLoading = true;
-  bool isAuthenticated = false;
+  late User? authenticatedUser;
 
   @override
   void initState() {
@@ -22,14 +25,17 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> checkAuthentication() async {
-    isAuthenticated = await authService.isAuthenticated();
+    authenticatedUser = await authService.isAuthenticated();
     setState(() {
       isLoading = false;
     });
 
     if (!mounted) return;
 
-    if (isAuthenticated) {
+    if (authenticatedUser != null) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.setUser(authenticatedUser!);
+
       Navigator.pushNamedAndRemoveUntil(
         context,
         Routes.home,

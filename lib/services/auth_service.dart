@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:streamscape/constants.dart';
+import 'package:streamscape/models/user_model.dart';
 import 'package:streamscape/services/storage_service.dart';
 import 'package:streamscape/utils/error_handler.dart';
 import 'package:streamscape/widgets/custom_snackbar.dart';
@@ -9,12 +10,12 @@ import 'package:streamscape/widgets/custom_snackbar.dart';
 class AuthService {
   final StorageService storageService = StorageService();
 
-  Future<bool> isAuthenticated() async {
+  Future<User?> isAuthenticated() async {
     try {
       final String token = await storageService.get(jwtKey);
 
       if (token.isEmpty) {
-        return false;
+        return null;
       }
 
       final response = await http.get(
@@ -28,15 +29,15 @@ class AuthService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> body = jsonDecode(response.body);
         if (body["status"] == "success") {
-          debugPrint(body.toString());
-          return true;
+          final User user = User.fromJson(body["data"]["user"]);
+          return user;
         }
       }
 
-      return false;
+      return null;
     } catch (e) {
       debugPrint(e.toString());
-      return false;
+      return null;
     }
   }
 

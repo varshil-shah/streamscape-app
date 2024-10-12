@@ -70,6 +70,8 @@ class _SignupScreenState extends State<SignupScreen> {
         isLoading = false;
       });
 
+      if (!mounted) return;
+
       if (status) {
         Navigator.pushNamedAndRemoveUntil(
           context,
