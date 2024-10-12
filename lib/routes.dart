@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:streamscape/screens/home_screen.dart';
 import 'package:streamscape/screens/signin_screen.dart';
 import 'package:streamscape/screens/signup_screen.dart';
+import 'package:streamscape/screens/splash_screen.dart';
 
 class Routes {
+  static const String initial = "/";
   static const String signup = '/signup';
   static const String signin = '/signin';
   static const String home = '/home';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case initial:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case signup:
         return MaterialPageRoute(builder: (_) => const SignupScreen());
       case signin:

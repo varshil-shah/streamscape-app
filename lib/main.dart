@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       onGenerateRoute: Routes.generateRoute,
-      initialRoute: Routes.signup,
+      initialRoute: Routes.initial,
     );
   }
 }

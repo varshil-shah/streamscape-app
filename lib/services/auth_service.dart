@@ -9,6 +9,37 @@ import 'package:streamscape/widgets/custom_snackbar.dart';
 class AuthService {
   final StorageService storageService = StorageService();
 
+  Future<bool> isAuthenticated() async {
+    try {
+      final String token = await storageService.get(jwtKey);
+
+      if (token.isEmpty) {
+        return false;
+      }
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/v1/users/me'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> body = jsonDecode(response.body);
+        if (body["status"] == "success") {
+          debugPrint(body.toString());
+          return true;
+        }
+      }
+
+      return false;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
   Future<bool> signup(
     BuildContext ctx,
     String displayName,
@@ -36,14 +67,10 @@ class AuthService {
 
           CustomSnackBar.showSnackBar(ctx, "Account created successfully");
           return true;
-        } else {
-          ErrorHandler.handleError(ctx, response, "Storage permission denied!");
-          return false;
         }
-      } else {
-        ErrorHandler.handleError(ctx, response, "Unexpected error occurred");
-        return false;
       }
+      ErrorHandler.handleError(ctx, response, "Unexpected error occurred");
+      return false;
     } catch (e) {
       debugPrint(e.toString());
       return false;
@@ -71,14 +98,10 @@ class AuthService {
 
           CustomSnackBar.showSnackBar(ctx, "Signed in successfully");
           return true;
-        } else {
-          ErrorHandler.handleError(ctx, response, "Storage permission denied!");
-          return false;
         }
-      } else {
-        ErrorHandler.handleError(ctx, response, "Unexpected error occurred");
-        return false;
       }
+      ErrorHandler.handleError(ctx, response, "Unexpected error occurred");
+      return false;
     } catch (e) {
       debugPrint(e.toString());
       return false;
