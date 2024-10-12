@@ -27,34 +27,33 @@ class HomeScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Welcome, ${userProvider.user!.displayName}",
-                style: const TextStyle(fontSize: 20),
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  authService.signout(context);
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    Routes.signin,
-                    (route) => false,
-                  );
-                },
-                child: const Text(
-                  "Logout",
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Welcome, ${userProvider.user!.displayName}",
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                authService.signout(context);
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  Routes.signin,
+                  (route) => false,
+                );
+              },
+              child: const Text(
+                "Logout",
+                style: TextStyle(
+                  fontSize: 20,
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+          ],
+        )),
       ),
     );
   }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:streamscape/constants.dart';
+import 'package:streamscape/models/user_model.dart';
+import 'package:streamscape/providers/user_provider.dart';
 import 'package:streamscape/routes.dart';
 import 'package:streamscape/services/auth_service.dart';
 import 'package:streamscape/widgets/form_button.dart';
@@ -59,12 +62,15 @@ class _SigninScreenState extends State<SigninScreen> {
         );
       }
 
-      final bool success = await authService.signin(context, email, password);
+      final User? user = await authService.signin(context, email, password);
       setState(() {
         isLoading = false;
       });
 
-      if (success) {
+      if (user != null) {
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        userProvider.setUser(user);
+
         Navigator.pushNamedAndRemoveUntil(
           context,
           Routes.home,

@@ -29,8 +29,7 @@ class AuthService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> body = jsonDecode(response.body);
         if (body["status"] == "success") {
-          final User user = User.fromJson(body["data"]["user"]);
-          return user;
+          return User.fromJson(body["data"]["user"]);
         }
       }
 
@@ -41,7 +40,7 @@ class AuthService {
     }
   }
 
-  Future<bool> signup(
+  Future<User?> signup(
     BuildContext ctx,
     String displayName,
     String email,
@@ -66,19 +65,18 @@ class AuthService {
           final String token = body["token"];
           await storageService.set(jwtKey, token);
 
-          CustomSnackBar.showSnackBar(ctx, "Account created successfully");
-          return true;
+          return User.fromJson(body["data"]["user"]);
         }
       }
       ErrorHandler.handleError(ctx, response, "Unexpected error occurred");
-      return false;
+      return null;
     } catch (e) {
       debugPrint(e.toString());
-      return false;
+      return null;
     }
   }
 
-  Future<bool> signin(BuildContext ctx, String email, String password) async {
+  Future<User?> signin(BuildContext ctx, String email, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/v1/users/login'),
@@ -97,15 +95,14 @@ class AuthService {
           final String token = body["token"];
           await storageService.set(jwtKey, token);
 
-          CustomSnackBar.showSnackBar(ctx, "Signed in successfully");
-          return true;
+          return User.fromJson(body["data"]["user"]);
         }
       }
       ErrorHandler.handleError(ctx, response, "Unexpected error occurred");
-      return false;
+      return null;
     } catch (e) {
       debugPrint(e.toString());
-      return false;
+      return null;
     }
   }
 

@@ -16,7 +16,6 @@ class _SplashScreenState extends State<SplashScreen> {
   final AuthService authService = AuthService();
 
   bool isLoading = true;
-  late User? authenticatedUser;
 
   @override
   void initState() {
@@ -25,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> checkAuthentication() async {
-    authenticatedUser = await authService.isAuthenticated();
+    User? authenticatedUser = await authService.isAuthenticated();
     setState(() {
       isLoading = false;
     });
@@ -34,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (authenticatedUser != null) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      userProvider.setUser(authenticatedUser!);
+      userProvider.setUser(authenticatedUser);
 
       Navigator.pushNamedAndRemoveUntil(
         context,
