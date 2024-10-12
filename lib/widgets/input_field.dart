@@ -8,6 +8,7 @@ class TextInputField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final String? Function(String?)? validator;
   final bool obscureText;
+  final TextInputType keyboardType;
 
   const TextInputField({
     super.key,
@@ -17,6 +18,7 @@ class TextInputField extends StatefulWidget {
     this.onChanged,
     this.validator,
     this.obscureText = false,
+    this.keyboardType = TextInputType.text,
   });
 
   @override
@@ -31,6 +33,7 @@ class _TextInputFieldState extends State<TextInputField> {
       onChanged: widget.onChanged,
       obscureText: widget.obscureText,
       validator: widget.validator,
+      keyboardType: widget.keyboardType,
       decoration: InputDecoration(
         hintText: widget.hintText,
         prefixIcon: Icon(widget.icon),

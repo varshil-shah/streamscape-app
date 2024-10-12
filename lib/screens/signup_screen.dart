@@ -121,6 +121,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           controller: emailController,
                           hintText: "Enter your email address",
                           icon: Icons.mail,
+                          keyboardType: TextInputType.emailAddress,
                           validator: (email) {
                             if (email!.isEmpty || !email.contains("@")) {
                               return "Please enter your email address";
@@ -134,6 +135,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           hintText: "Enter your password",
                           obscureText: true,
                           icon: Icons.lock,
+                          keyboardType: TextInputType.visiblePassword,
                           validator: (password) {
                             if (password!.isEmpty) {
                               return "Please enter your password";

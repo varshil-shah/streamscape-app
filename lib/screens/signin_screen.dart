@@ -103,6 +103,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           controller: emailController,
                           hintText: "Enter your email address",
                           icon: Icons.mail,
+                          keyboardType: TextInputType.emailAddress,
                           validator: (email) {
                             if (email!.isEmpty || !email.contains("@")) {
                               return "Please enter a valid email address";
@@ -115,6 +116,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           controller: passwordController,
                           hintText: "Enter your password",
                           obscureText: true,
+                          keyboardType: TextInputType.visiblePassword,
                           icon: Icons.lock,
                           validator: (password) {
                             if (password!.isEmpty) {
@@ -128,13 +130,19 @@ class _SigninScreenState extends State<SigninScreen> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FormButton(
-                            text: "Sign in",
-                            onPressed: handleSignup,
-                          ),
-                        ),
+                        isLoading
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                  color: primaryColor,
+                                ),
+                              )
+                            : SizedBox(
+                                width: double.infinity,
+                                child: FormButton(
+                                  text: "Sign in",
+                                  onPressed: handleSignup,
+                                ),
+                              ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
