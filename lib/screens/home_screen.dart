@@ -22,6 +22,15 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: () {},
+          ),
+          Hero(
+            tag: 'searchBar',
+            child: IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, Routes.search);
+              },
+              icon: const Icon(Icons.search),
+            ),
           )
         ],
       ),
