@@ -13,6 +13,18 @@ class HomeScreen extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("StreamScape"),
+        leading: Image.asset(
+          'assets/icons/logo.png',
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {},
+          )
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: Column(
@@ -25,20 +37,21 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextButton(
-                  onPressed: () {
-                    authService.signout(context);
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      Routes.signin,
-                      (route) => false,
-                    );
-                  },
-                  child: const Text(
-                    "Logout",
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  )),
+                onPressed: () {
+                  authService.signout(context);
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    Routes.signin,
+                    (route) => false,
+                  );
+                },
+                child: const Text(
+                  "Logout",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
