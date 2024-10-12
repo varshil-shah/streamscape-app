@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
       Navigator.pushNamedAndRemoveUntil(
         context,
-        Routes.home,
+        Routes.main,
         (route) => false,
       );
     } else {

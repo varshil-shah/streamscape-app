@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:streamscape/screens/home_screen.dart';
+import 'package:streamscape/screens/main_screen.dart';
 import 'package:streamscape/screens/search_screen.dart';
 import 'package:streamscape/screens/signin_screen.dart';
 import 'package:streamscape/screens/signup_screen.dart';
@@ -7,6 +8,7 @@ import 'package:streamscape/screens/splash_screen.dart';
 
 class Routes {
   static const String initial = "/";
+  static const String main = "/main";
   static const String signup = '/signup';
   static const String signin = '/signin';
   static const String home = '/home';
@@ -16,6 +18,8 @@ class Routes {
     switch (settings.name) {
       case initial:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case main:
+        return MaterialPageRoute(builder: (_) => const MainScreen());
       case signup:
         return MaterialPageRoute(builder: (_) => const SignupScreen());
       case signin:

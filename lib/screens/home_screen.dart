@@ -13,27 +13,6 @@ class HomeScreen extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("StreamScape"),
-        leading: Image.asset(
-          'assets/icons/logo.png',
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-          Hero(
-            tag: 'searchBar',
-            child: IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, Routes.search);
-              },
-              icon: const Icon(Icons.search),
-            ),
-          )
-        ],
-      ),
       body: SafeArea(
         child: Center(
             child: Column(

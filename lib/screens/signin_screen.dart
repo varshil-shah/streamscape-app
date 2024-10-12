@@ -73,7 +73,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
         Navigator.pushNamedAndRemoveUntil(
           context,
-          Routes.home,
+          Routes.main,
           (route) => false,
         );
       }
