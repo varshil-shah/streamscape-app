@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:streamscape/routes.dart';
+import 'package:streamscape/screens/history_screen.dart';
 import 'package:streamscape/screens/home_screen.dart';
+import 'package:streamscape/screens/profile_screen.dart';
+import 'package:streamscape/screens/upload_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -11,36 +14,53 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  bool _showAppBar = false;
+  final PageController _pageController = PageController();
 
   final List<Widget> _screens = [
     const HomeScreen(),
+    const UploadScreen(),
+    const HistoryScreen(),
+    const ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("StreamScape"),
-        leading: Image.asset(
-          'assets/icons/logo.png',
+      appBar: _showAppBar
+          ? AppBar(
+              title: const Text("StreamScape"),
+              leading: Image.asset(
+                'assets/icons/logo.png',
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.notifications),
+                  onPressed: () {},
+                ),
+                Hero(
+                  tag: 'searchBar',
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.search);
+                    },
+                    icon: const Icon(Icons.search),
+                  ),
+                )
+              ],
+            )
+          : null,
+      body: SafeArea(
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          children: _screens,
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-          Hero(
-            tag: 'searchBar',
-            child: IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, Routes.search);
-              },
-              icon: const Icon(Icons.search),
-            ),
-          )
-        ],
       ),
-      body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
@@ -48,6 +68,7 @@ class _MainScreenState extends State<MainScreen> {
           setState(() {
             _selectedIndex = index;
           });
+          _pageController.jumpToPage(index);
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

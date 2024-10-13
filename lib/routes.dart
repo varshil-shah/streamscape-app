@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:streamscape/screens/history_screen.dart';
 import 'package:streamscape/screens/home_screen.dart';
 import 'package:streamscape/screens/main_screen.dart';
+import 'package:streamscape/screens/profile_screen.dart';
 import 'package:streamscape/screens/search_screen.dart';
 import 'package:streamscape/screens/signin_screen.dart';
 import 'package:streamscape/screens/signup_screen.dart';
 import 'package:streamscape/screens/splash_screen.dart';
+import 'package:streamscape/screens/upload_screen.dart';
 
 class Routes {
   static const String initial = "/";
@@ -13,6 +16,9 @@ class Routes {
   static const String signin = '/signin';
   static const String home = '/home';
   static const String search = '/search';
+  static const String profile = '/profile';
+  static const String upload = '/upload';
+  static const String history = '/history';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -28,6 +34,12 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case search:
         return MaterialPageRoute(builder: (_) => const SearchScreen());
+      case profile:
+        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      case upload:
+        return MaterialPageRoute(builder: (_) => const UploadScreen());
+      case history:
+        return MaterialPageRoute(builder: (_) => const HistoryScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

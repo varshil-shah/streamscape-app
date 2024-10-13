@@ -5,4 +5,5 @@ const String baseUrl =
 const String jwtKey = "jwt";
 
 const Color primaryColor = Color(0xFF536DFE);
+const Color secondaryColor = Color(0xFF1E88E5);
 const Color lightGreyColor = Color(0xFFF1F3F5);

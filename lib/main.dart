@@ -26,7 +26,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'StreamScape',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: primaryColor,
+          secondary: secondaryColor,
+        ),
+        primaryColor: primaryColor,
         useMaterial3: true,
       ),
       onGenerateRoute: Routes.generateRoute,
