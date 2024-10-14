@@ -14,7 +14,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  bool _showAppBar = false;
   final PageController _pageController = PageController();
 
   final List<Widget> _screens = [
@@ -27,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _showAppBar
+      appBar: _selectedIndex == 0
           ? AppBar(
               title: const Text("StreamScape"),
               leading: Image.asset(
@@ -36,7 +35,10 @@ class _MainScreenState extends State<MainScreen> {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.notifications),
-                  onPressed: () {},
+                  onPressed: () {
+                    // testing purpose
+                    Navigator.pushNamed(context, Routes.video);
+                  },
                 ),
                 Hero(
                   tag: 'searchBar',

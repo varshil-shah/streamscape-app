@@ -8,6 +8,7 @@ import 'package:streamscape/screens/signin_screen.dart';
 import 'package:streamscape/screens/signup_screen.dart';
 import 'package:streamscape/screens/splash_screen.dart';
 import 'package:streamscape/screens/upload_screen.dart';
+import 'package:streamscape/screens/video_screen.dart';
 
 class Routes {
   static const String initial = "/";
@@ -19,6 +20,7 @@ class Routes {
   static const String profile = '/profile';
   static const String upload = '/upload';
   static const String history = '/history';
+  static const String video = '/video';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -40,6 +42,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const UploadScreen());
       case history:
         return MaterialPageRoute(builder: (_) => const HistoryScreen());
+      case video:
+        return MaterialPageRoute(builder: (_) => const VideoScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
