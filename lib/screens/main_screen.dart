@@ -17,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   final PageController _pageController = PageController();
 
   final List<Widget> _screens = [
-    const HomeScreen(),
+    HomeScreen(),
     const UploadScreen(),
     const HistoryScreen(),
     const ProfileScreen(),
@@ -32,6 +32,7 @@ class _MainScreenState extends State<MainScreen> {
               leading: Image.asset(
                 'assets/icons/logo.png',
               ),
+              backgroundColor: Colors.white,
               actions: [
                 IconButton(
                   icon: const Icon(Icons.notifications),
@@ -64,6 +65,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: (index) {

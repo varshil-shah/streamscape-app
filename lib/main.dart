@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:streamscape/constants.dart';
 import 'package:streamscape/providers/connectivity_provider.dart';
 import 'package:streamscape/providers/user_provider.dart';
+import 'package:streamscape/providers/video_provider.dart';
 import 'package:streamscape/routes.dart';
 import 'package:streamscape/widgets/internet_connectivity.dart';
 
@@ -10,6 +11,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => VideoProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
       ],
