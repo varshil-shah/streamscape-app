@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:streamscape/constants.dart';
 import 'package:streamscape/widgets/circular_avatar.dart';
-import 'package:lecle_yoyo_player/lecle_yoyo_player.dart';
+import 'package:better_player/better_player.dart';
+import 'package:flutter/services.dart';
 
 class VideoScreen extends StatefulWidget {
   const VideoScreen({super.key});
@@ -22,10 +23,13 @@ class _VideoScreenState extends State<VideoScreen>
 
   late TabController _tabController;
   bool isLoading = true;
+  bool _hasError = false;
+  late BetterPlayerController _betterPlayerController;
 
   @override
   void initState() {
     super.initState();
+    _initializePlayer();
     _tabController = TabController(length: 2, vsync: this);
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
@@ -36,8 +40,65 @@ class _VideoScreenState extends State<VideoScreen>
     });
   }
 
+  void _initializePlayer() {
+    BetterPlayerConfiguration betterPlayerConfiguration =
+        const BetterPlayerConfiguration(
+      aspectRatio: 16 / 9,
+      fit: BoxFit.contain,
+      autoPlay: true,
+      looping: false,
+      deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
+      deviceOrientationsOnFullScreen: [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
+      controlsConfiguration: BetterPlayerControlsConfiguration(
+        enableFullscreen: true,
+        enablePlayPause: true,
+        enableSkips: false,
+        enablePlaybackSpeed: true,
+        enableSubtitles: true,
+        loadingColor: primaryColor,
+        progressBarPlayedColor: primaryColor,
+        progressBarHandleColor: primaryColor,
+        subtitlesIcon: Icons.closed_caption_outlined,
+      ),
+    );
+
+    final List<BetterPlayerSubtitlesSource> subtitlesSources = [
+      BetterPlayerSubtitlesSource(
+        type: BetterPlayerSubtitlesSourceType.network,
+        name: "English",
+        urls: [
+          "https://s3.ap-south-1.amazonaws.com/final-videos.video-transcoding-service/videos/hitesh-1/subtitles.vtt"
+        ],
+        selectedByDefault: true,
+      ),
+    ];
+
+    BetterPlayerDataSource dataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      videoUrl,
+      subtitles: subtitlesSources,
+      notificationConfiguration: const BetterPlayerNotificationConfiguration(
+        showNotification: true,
+        title: "Now playing",
+        author: "Hitesh Choudhary",
+      ),
+    );
+
+    _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+    _betterPlayerController.setupDataSource(dataSource);
+    _betterPlayerController.addEventsListener((event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.exception) {
+        setState(() => _hasError = true);
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _betterPlayerController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -54,38 +115,42 @@ class _VideoScreenState extends State<VideoScreen>
       );
     }
 
-    return const AspectRatio(
-      aspectRatio: 16 / 9,
-      child: YoYoPlayer(
+    if (_hasError) {
+      return AspectRatio(
         aspectRatio: 16 / 9,
-        url: videoUrl,
-        videoStyle: VideoStyle(
-          qualityStyle: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-          forwardAndBackwardBtSize: 30.0,
-          playButtonIconSize: 40.0,
-          playIcon: Icon(
-            Icons.play_arrow,
-            size: 40.0,
-            color: Colors.white,
-          ),
-          pauseIcon: Icon(
-            Icons.pause,
-            size: 40.0,
-            color: Colors.white,
+        child: Container(
+          color: Colors.black,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 50),
+              const SizedBox(height: 16),
+              const Text(
+                "Error playing video",
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _hasError = false;
+                    _initializePlayer();
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                ),
+                child: const Text("Retry"),
+              ),
+            ],
           ),
         ),
-        videoLoadingStyle: VideoLoadingStyle(
-          loading: Center(
-            child: CircularProgressIndicator(
-              color: primaryColor,
-            ),
-          ),
-        ),
-      ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: BetterPlayer(controller: _betterPlayerController),
     );
   }
 

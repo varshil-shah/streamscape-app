@@ -36,7 +36,12 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: Routes.generateRoute,
       initialRoute: Routes.initial,
       builder: (context, child) {
-        return InternetConnectivity(child: child!);
+        return InternetConnectivity(
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: child!,
+          ),
+        );
       },
     );
   }
