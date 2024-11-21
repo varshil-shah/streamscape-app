@@ -41,6 +41,7 @@ dependencies:
   connectivity_plus: ^6.0.5
   better_player: ^0.0.84
   shimmer: ^3.0.0
+  lecle_yoyo_player: ^0.0.8
 
 dev_dependencies:
   flutter_test:
