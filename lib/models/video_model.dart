@@ -6,7 +6,7 @@ class VideoModel {
   final String fileName;
   final String objectKey;
   final String type;
-  final String owner;
+  final UserModel owner;
   final String progress;
   final int views;
   final bool isPublished;
@@ -40,7 +40,7 @@ class VideoModel {
       fileName: json['fileName'],
       objectKey: json['objectKey'],
       type: json['type'],
-      owner: json['owner'],
+      owner: UserModel.fromJson(json['owner']),
       progress: json['progress'],
       views: json['views'],
       isPublished: json['isPublished'],
@@ -73,6 +73,35 @@ class VideoResolutions {
       r720p: json['720p'] ?? '',
       r1080p: json['1080p'] ?? '',
       playlist: json['playlist'] ?? '',
+    );
+  }
+}
+
+class UserModel {
+  final String id;
+  final String displayName;
+  final String email;
+  final String role;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  UserModel({
+    required this.id,
+    required this.displayName,
+    required this.email,
+    required this.role,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['_id'],
+      displayName: json['displayName'],
+      email: json['email'],
+      role: json['role'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 }

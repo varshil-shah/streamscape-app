@@ -212,11 +212,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             // Channel avatar
                             CircleAvatar(
                               radius: 20,
-                              backgroundColor: Colors.grey[200],
+                              backgroundColor: Theme.of(context).primaryColor,
                               child: Text(
-                                video.title[0].toUpperCase(),
+                                video.owner.displayName[0].toUpperCase(),
                                 style: const TextStyle(
-                                  color: Colors.black54,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -239,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Channel Name • ${video.views} views',
+                                    '${video.owner.displayName} • ${video.views} views',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey[600],
