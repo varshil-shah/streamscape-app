@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:streamscape/constants.dart';
-import 'package:streamscape/widgets/circular_avatar.dart';
+import 'package:streamscape/models/video_model.dart';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/services.dart';
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen({super.key});
+  final VideoModel video;
+  const VideoScreen({super.key, required this.video});
 
   @override
   State<VideoScreen> createState() => _VideoScreenState();
@@ -14,91 +15,98 @@ class VideoScreen extends StatefulWidget {
 
 class _VideoScreenState extends State<VideoScreen>
     with TickerProviderStateMixin {
-  static const String videoUrl =
-      "https://s3.ap-south-1.amazonaws.com/final-videos.video-transcoding-service/videos/hitesh-1/playlist.m3u8";
-
-  final String title = "Learn how React works internally with Hitesh Choudhary";
-  final String videoDescription =
-      "This is a detailed video explaining the internal workings of React...";
-
   late TabController _tabController;
   bool isLoading = true;
   bool _hasError = false;
-  late BetterPlayerController _betterPlayerController;
+  BetterPlayerController? _betterPlayerController;
 
   @override
   void initState() {
     super.initState();
-    _initializePlayer();
     _tabController = TabController(length: 2, vsync: this);
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
+    _initializePlayer();
   }
 
   void _initializePlayer() {
-    BetterPlayerConfiguration betterPlayerConfiguration =
-        const BetterPlayerConfiguration(
-      aspectRatio: 16 / 9,
-      fit: BoxFit.contain,
-      autoPlay: true,
-      looping: false,
-      deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
-      deviceOrientationsOnFullScreen: [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ],
-      controlsConfiguration: BetterPlayerControlsConfiguration(
-        enableFullscreen: true,
-        enablePlayPause: true,
-        enableSkips: false,
-        enablePlaybackSpeed: true,
-        enableSubtitles: true,
-        loadingColor: primaryColor,
-        progressBarPlayedColor: primaryColor,
-        progressBarHandleColor: primaryColor,
-        subtitlesIcon: Icons.closed_caption_outlined,
-      ),
-    );
-
-    final List<BetterPlayerSubtitlesSource> subtitlesSources = [
-      BetterPlayerSubtitlesSource(
-        type: BetterPlayerSubtitlesSourceType.network,
-        name: "English",
-        urls: [
-          "https://s3.ap-south-1.amazonaws.com/final-videos.video-transcoding-service/videos/hitesh-1/subtitles.vtt"
+    try {
+      final betterPlayerConfiguration = BetterPlayerConfiguration(
+        aspectRatio: 16 / 9,
+        fit: BoxFit.contain,
+        autoPlay: true,
+        looping: false,
+        deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
+        deviceOrientationsOnFullScreen: [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
         ],
-        selectedByDefault: true,
-      ),
-    ];
+        placeholder: const Center(child: CircularProgressIndicator()),
+        showPlaceholderUntilPlay: true,
+        subtitlesConfiguration: const BetterPlayerSubtitlesConfiguration(
+          fontSize: 16,
+          fontColor: Colors.white,
+          backgroundColor: Colors.black54,
+          outlineColor: Colors.black,
+          outlineSize: 2.0,
+        ),
+        errorBuilder: (context, errorMessage) {
+          return Center(
+            child: Text(
+              errorMessage ?? "An error occurred",
+              style: const TextStyle(color: Colors.white),
+            ),
+          );
+        },
+      );
 
-    BetterPlayerDataSource dataSource = BetterPlayerDataSource(
-      BetterPlayerDataSourceType.network,
-      videoUrl,
-      subtitles: subtitlesSources,
-      notificationConfiguration: const BetterPlayerNotificationConfiguration(
-        showNotification: true,
-        title: "Now playing",
-        author: "Hitesh Choudhary",
-      ),
-    );
+      final List<BetterPlayerSubtitlesSource> subtitles =
+          widget.video.subtitleUrl.isNotEmpty
+              ? [
+                  BetterPlayerSubtitlesSource(
+                    type: BetterPlayerSubtitlesSourceType.network,
+                    name: "Default",
+                    urls: [widget.video.subtitleUrl],
+                  ),
+                ]
+              : [];
 
-    _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    _betterPlayerController.setupDataSource(dataSource);
-    _betterPlayerController.addEventsListener((event) {
-      if (event.betterPlayerEventType == BetterPlayerEventType.exception) {
-        setState(() => _hasError = true);
-      }
-    });
+      final betterPlayerDataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        widget.video.videoResolutions.playlist,
+        subtitles: subtitles,
+        cacheConfiguration: const BetterPlayerCacheConfiguration(
+          useCache: true,
+          maxCacheSize: 10 * 1024 * 1024,
+          maxCacheFileSize: 10 * 1024 * 1024,
+        ),
+        bufferingConfiguration: const BetterPlayerBufferingConfiguration(
+          minBufferMs: 50000,
+          maxBufferMs: 120000,
+          bufferForPlaybackMs: 2500,
+          bufferForPlaybackAfterRebufferMs: 5000,
+        ),
+      );
+
+      _betterPlayerController =
+          BetterPlayerController(betterPlayerConfiguration);
+      _betterPlayerController!.setupDataSource(betterPlayerDataSource);
+
+      _betterPlayerController!.addEventsListener((event) {
+        if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
+          setState(() => isLoading = false);
+        }
+      });
+    } catch (error) {
+      setState(() {
+        _hasError = true;
+        isLoading = false;
+      });
+      print("Error initializing player: $error");
+    }
   }
 
   @override
   void dispose() {
-    _betterPlayerController.dispose();
+    _betterPlayerController?.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -150,7 +158,7 @@ class _VideoScreenState extends State<VideoScreen>
 
     return AspectRatio(
       aspectRatio: 16 / 9,
-      child: BetterPlayer(controller: _betterPlayerController),
+      child: BetterPlayer(controller: _betterPlayerController!),
     );
   }
 
@@ -189,7 +197,7 @@ class _VideoScreenState extends State<VideoScreen>
                               ),
                             )
                           : Text(
-                              title,
+                              widget.video.title,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -202,71 +210,25 @@ class _VideoScreenState extends State<VideoScreen>
                       // Channel Info Row
                       Row(
                         children: [
-                          isLoading
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey[300]!,
-                                  highlightColor: Colors.grey[100]!,
-                                  child: Container(
-                                    height: 40,
-                                    width: 40,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                )
-                              : const CircularAvatar(
-                                  displayName: "Hitesh Choudhary"),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                isLoading
-                                    ? Shimmer.fromColors(
-                                        baseColor: Colors.grey[300]!,
-                                        highlightColor: Colors.grey[100]!,
-                                        child: Container(
-                                          height: 20,
-                                          width: 120,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                        ),
-                                      )
-                                    : const Text(
-                                        "Hitesh Choudhary",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                              ],
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            child: Text(
+                              widget.video.owner.displayName[0].toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          isLoading
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey[300]!,
-                                  highlightColor: Colors.grey[100]!,
-                                  child: Container(
-                                    height: 20,
-                                    width: 80,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  ),
-                                )
-                              : const Text(
-                                  "20K views",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                          const SizedBox(width: 12),
+                          Text(
+                            widget.video.owner.displayName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
 
@@ -361,7 +323,7 @@ class _VideoScreenState extends State<VideoScreen>
                                 children: [
                                   SingleChildScrollView(
                                     child: Text(
-                                      videoDescription,
+                                      widget.video.description,
                                       style: const TextStyle(
                                         fontSize: 15,
                                         height: 1.5,

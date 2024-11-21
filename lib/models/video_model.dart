@@ -32,22 +32,31 @@ class VideoModel {
   });
 
   factory VideoModel.fromJson(Map<String, dynamic> json) {
-    return VideoModel(
-      videoResolutions: VideoResolutions.fromJson(json['videoResolutions']),
-      id: json['_id'],
-      title: json['title'],
-      description: json['description'] ?? '',
-      fileName: json['fileName'],
-      objectKey: json['objectKey'],
-      type: json['type'],
-      owner: UserModel.fromJson(json['owner']),
-      progress: json['progress'],
-      views: json['views'],
-      isPublished: json['isPublished'],
-      createdAt: DateTime.parse(json['createdAt']),
-      subtitleUrl: json['subtitleUrl'] ?? '',
-      thumbnailUrl: json['thumbnailUrl'] ?? '',
-    );
+    try {
+      return VideoModel(
+        videoResolutions:
+            VideoResolutions.fromJson(json['videoResolutions'] ?? {}),
+        id: json['_id'] ?? '',
+        title: json['title'] ?? '',
+        description: json['description'] ?? '',
+        fileName: json['fileName'] ?? '',
+        objectKey: json['objectKey'] ?? '',
+        type: json['type'] ?? '',
+        owner: UserModel.fromJson(json['owner'] ?? {}),
+        progress: json['progress'] ?? '',
+        views: json['views'] ?? 0,
+        isPublished: json['isPublished'] ?? false,
+        createdAt: DateTime.parse(
+            json['createdAt'] ?? DateTime.now().toIso8601String()),
+        subtitleUrl: json['subtitleUrl'] ?? '',
+        thumbnailUrl: json['thumbnailUrl'] ?? '',
+      );
+    } catch (e, stackTrace) {
+      print('Error parsing VideoModel: $e');
+      print('Stack trace: $stackTrace');
+      print('JSON data: $json');
+      rethrow;
+    }
   }
 }
 
@@ -67,13 +76,20 @@ class VideoResolutions {
   });
 
   factory VideoResolutions.fromJson(Map<String, dynamic> json) {
-    return VideoResolutions(
-      r360p: json['360p'] ?? '',
-      r480p: json['480p'] ?? '',
-      r720p: json['720p'] ?? '',
-      r1080p: json['1080p'] ?? '',
-      playlist: json['playlist'] ?? '',
-    );
+    try {
+      return VideoResolutions(
+        r360p: json['360p'] ?? '',
+        r480p: json['480p'] ?? '',
+        r720p: json['720p'] ?? '',
+        r1080p: json['1080p'] ?? '',
+        playlist: json['playlist'] ?? '',
+      );
+    } catch (e, stackTrace) {
+      print('Error parsing VideoResolutions: $e');
+      print('Stack trace: $stackTrace');
+      print('JSON data: $json');
+      rethrow;
+    }
   }
 }
 
@@ -95,13 +111,22 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['_id'],
-      displayName: json['displayName'],
-      email: json['email'],
-      role: json['role'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-    );
+    try {
+      return UserModel(
+        id: json['_id'] ?? '',
+        displayName: json['displayName'] ?? '',
+        email: json['email'] ?? '',
+        role: json['role'] ?? '',
+        createdAt: DateTime.parse(
+            json['createdAt'] ?? DateTime.now().toIso8601String()),
+        updatedAt: DateTime.parse(
+            json['updatedAt'] ?? DateTime.now().toIso8601String()),
+      );
+    } catch (e, stackTrace) {
+      print('Error parsing UserModel: $e');
+      print('Stack trace: $stackTrace');
+      print('JSON data: $json');
+      rethrow;
+    }
   }
 }
